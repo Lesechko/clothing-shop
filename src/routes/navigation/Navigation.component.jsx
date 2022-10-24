@@ -11,7 +11,7 @@ import { CartContext } from "../../context/CartContex";
 
 function Navigation() {
   const { currentUser } = useContext(UserContext);
-  const { isCartOpen } = useContext(CartContext);
+  const { isCartOpen, cartItems } = useContext(CartContext);
 
   return (
     <>
@@ -34,7 +34,7 @@ function Navigation() {
           )}
           <CartIcon />
         </div>
-        {isCartOpen && <CartDropdown />}{" "}
+        {isCartOpen && <CartDropdown cartItems={cartItems} />}
       </div>
       <Outlet />
     </>
