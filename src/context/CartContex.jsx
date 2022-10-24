@@ -16,20 +16,54 @@ const addCartItem = (cartItems, productToAdd) => {
   }
 };
 
+const removeCartItem = (cartItems, productToRemove) => {
+  let exestingCartItem = cartItems.find(
+    (item) => item.id === productToRemove.id
+  );
+
+  if (exestingCartItem.quantity === 1) {
+    return cartItems.filter((item) => item.id !== productToRemove.id);
+  }
+
+  return cartItems.map((item) => {
+    if (item.id === productToRemove.id) {
+      return { ...item, quantity: item.quantity - 1 };
+    }
+
+    return item;
+  });
+};
+
+const clearCartItem = (cartItems, productToClear) =>
+  cartItems.filter((item) => item.id !== productToClear.id);
+
 export const CartContext = createContext({
   isCartOpen: false,
-  setIsCartOpen: () => {},
   cartItems: [],
+  cartCount: 0,
+  cartTotal: 0,
+  setIsCartOpen: () => {},
   addItemToCart: () => {},
+  removeItemFromCart: () => {},
+  clearItemFromCart: () => {},
 });
 
 export const CartProvider = ({ children }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [cartCount, setCartCount] = useState(0);
+  const [cartTotal, setCartTotal] = useState(0);
 
   const addItemToCart = (productToAdd) => {
     setCartItems(addCartItem(cartItems, productToAdd));
+  };
+
+  const removeItemFromCart = (productToRemove) => {
+    setCartItems(removeCartItem(cartItems, productToRemove));
+  };
+
+  const clearItemFromCart = (productToClear) => {
+    setCartItems(clearCartItem(cartItems, productToClear));
   };
 
   useEffect(() => {
@@ -41,14 +75,26 @@ export const CartProvider = ({ children }) => {
     setCartCount(newCartCount);
   }, [cartItems]);
 
+  useEffect(() => {
+    const total = cartItems.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
+
+    setCartTotal(total);
+  }, [cartItems]);
+
   return (
     <CartContext.Provider
       value={{
         isCartOpen,
         cartItems,
         cartCount,
+        cartTotal,
         setIsCartOpen,
         addItemToCart,
+        removeItemFromCart,
+        clearItemFromCart,
       }}
     >
       {children}
