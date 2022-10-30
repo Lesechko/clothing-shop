@@ -17,9 +17,8 @@
     "yarn": "^1.22.19"
   },
   "scripts": {
-    "start-react": "react-scripts start",
+    "start": "react-scripts start",
     "start-server": "json-server --watch ./src/data/shop-data.json --port 3004",
-    "start": "concurrently \"yarn start-react\" \"yarn start-server\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
