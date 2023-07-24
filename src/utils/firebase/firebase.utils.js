@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp } from 'firebase/app';
 import {
   getAuth,
   signInWithRedirect,
@@ -8,7 +8,7 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-} from "firebase/auth";
+} from 'firebase/auth';
 
 import {
   getFirestore,
@@ -19,15 +19,15 @@ import {
   writeBatch,
   query,
   getDocs,
-} from "firebase/firestore";
+} from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCRARXyr7S_7X0G1NIGdFI7o-jcOIADnhI",
-  authDomain: "react-clothing-db-84224.firebaseapp.com",
-  projectId: "react-clothing-db-84224",
-  storageBucket: "react-clothing-db-84224.appspot.com",
-  messagingSenderId: "141417905424",
-  appId: "1:141417905424:web:b42a6ffcf5b58f05e67995",
+  apiKey: 'AIzaSyCRARXyr7S_7X0G1NIGdFI7o-jcOIADnhI',
+  authDomain: 'react-clothing-db-84224.firebaseapp.com',
+  projectId: 'react-clothing-db-84224',
+  storageBucket: 'react-clothing-db-84224.appspot.com',
+  messagingSenderId: '141417905424',
+  appId: '1:141417905424:web:b42a6ffcf5b58f05e67995',
 };
 
 initializeApp(firebaseConfig);
@@ -35,7 +35,7 @@ initializeApp(firebaseConfig);
 const provider = new GoogleAuthProvider();
 
 provider.setCustomParameters({
-  prompt: "select_account",
+  prompt: 'select_account',
 });
 
 export const auth = getAuth();
@@ -66,11 +66,10 @@ export const addCollectionAndDocuments = async (collectionKey, objectToAdd) => {
   });
 
   await batch.commit();
-  console.log("Done");
 };
 
 export const getCategoriesAndDocuments = async () => {
-  const collectionRef = collection(db, "categories");
+  const collectionRef = collection(db, 'categories');
   const q = query(collectionRef);
 
   const querySnapshot = await getDocs(q);
@@ -86,7 +85,7 @@ export const createUserDocumentFromAuth = async (
     return;
   }
 
-  const userDocRef = doc(db, "users", userAuth.uid);
+  const userDocRef = doc(db, 'users', userAuth.uid);
   const userSnapshot = await getDoc(userDocRef);
 
   if (!userSnapshot.exists()) {
@@ -101,11 +100,11 @@ export const createUserDocumentFromAuth = async (
         ...additionalInformation,
       });
     } catch (e) {
-      console.log("error creating User", e.message);
+      console.log('error creating User', e.message);
     }
   }
 
-  return userDocRef;
+  return userSnapshot;
 };
 
 export const createAuthUserWithEmailAndPassword = async (email, password) => {
@@ -120,3 +119,16 @@ export const signOutUser = () => signOut(auth);
 
 export const onAuthChangedListener = (callback) =>
   onAuthStateChanged(auth, callback);
+
+export const getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (userAuth) => {
+        unsubscribe();
+        resolve(userAuth);
+      },
+      reject
+    );
+  });
+};
